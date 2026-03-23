@@ -1,5 +1,10 @@
 import 'package:e_commerce_app/domain/constants/app_routes.dart';
+import 'package:e_commerce_app/ui/on_boarding/bloc/user_bloc.dart';
+import 'package:e_commerce_app/ui/on_boarding/bloc/user_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/user_state.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,6 +16,8 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passController = TextEditingController();
 
   bool isPassHidden = true;
+  bool isLoading = false;
+  bool isLogin = true;
 
   GlobalKey<FormState> formKey = GlobalKey();
 
@@ -195,24 +202,82 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFFF7A00),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {}
+                      child: BlocConsumer<UserBloc,UserState>(
+                        builder: (context, state) {
+                          return ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFFFF7A00),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                isLogin = true;
+                                context.read<UserBloc>().add(
+                                  LoginUserEvent(
+                                    email: emailController.text,
+                                    pass: passController.text,
+                                  ),
+                                );
+                              }
+                            },
+                            child: isLoading ? CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white ,) : Text(
+                              "Login",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          );
                         },
-                        child: Text(
-                          "Login",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        listener: (context, state) {
+                          if (state is LoadingUserState) {
+                            isLoading = true;
+                            setState(() {});
+                          }
+                          if (state is ErrorUserState) {
+                            isLoading=false;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  state.msg,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: Color(0xFF1F1F1F),
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                margin: EdgeInsets.all(10),
+                                elevation: 8,
+                              ),
+                            );
+                          }
+                          if (state is SuccessUserState) {
+                            isLoading = false;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "Login Successfully",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: Color(0xFFFF7A00),
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                margin: EdgeInsets.all(10),
+                                elevation: 8,
+                              ),
+                            );
+                            Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+                          }
+                        },
+                        listenWhen: (ps,cs)=>isLogin,
+                        buildWhen: (ps,cs)=>isLogin,
                       ),
                     ),
 
@@ -226,10 +291,8 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.signUp,
-                            );
+                            isLogin = false;
+                            Navigator.pushNamed(context, AppRoutes.signUp);
                           },
                           child: Text(
                             "Sign Up",

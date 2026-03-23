@@ -1,8 +1,17 @@
+import 'package:e_commerce_app/data/helper/api_helper.dart';
 import 'package:e_commerce_app/domain/constants/app_routes.dart';
+import 'package:e_commerce_app/ui/dashboard/cat_bloc/cat_bloc.dart';
+import 'package:e_commerce_app/ui/on_boarding/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main(){
-  runApp(MyApp());
+  runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider(create: (context)=>UserBloc(apiHelper: ApiHelper())),
+      BlocProvider(create: (context)=>CatBloc(apiHelper: ApiHelper())),
+    ],
+    child: MyApp(),));
 }
 class MyApp extends StatelessWidget{
   @override
