@@ -32,6 +32,8 @@ class _HomePageState extends State<HomePage> {
     "https://cdn.dribbble.com/userupload/40919812/file/original-4f7e1642391fa9692fb72e494d4e764a.jpg",
     "https://cdn.dribbble.com/userupload/37639814/file/original-ee7289f1da3287676c2e799cf4ca5dac.jpg",
     "https://cdn.dribbble.com/userupload/32284207/file/original-db79ff539dc14852f44ba89d667f0066.jpg",
+    "https://img.freepik.com/premium-psd/furniture-sale-social-media-post-square-banner-template_261577-107.jpg",
+    "https://img.freepik.com/free-psd/cyber-monday-super-sale-social-media-banner-instagram-post-template_106176-5969.jpg?semt=ais_hybrid&w=740&q=80"
   ];
 
   int dotIndex = 0;
