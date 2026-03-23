@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:e_commerce_app/data/helper/app_exception.dart';
 import 'package:http/http.dart' as http;
@@ -46,6 +45,7 @@ class ApiHelper {
     try {
       http.Response response = await http.post(
         Uri.parse(url),
+        headers: mHeaders,
         body: jsonEncode(details),
       );
       return handleResponse(res: response);

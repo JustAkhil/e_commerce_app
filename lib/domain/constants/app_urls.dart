@@ -3,4 +3,5 @@ class AppUrls{
   static final loginUrl="$baseUrl/user/login";
   static final signUpUrl="$baseUrl/user/registration";
   static final catUrl="$baseUrl/categories";
+  static final productUrl="$baseUrl/products";
 }

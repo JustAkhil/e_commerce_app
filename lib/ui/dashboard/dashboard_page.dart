@@ -12,100 +12,111 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
-  List<Widget>mNavs=[
+
+  List<Widget> mNavs = [
     MenuPage(),
     FavPage(),
     HomePage(),
     CartPage(),
     ProfilePage(),
   ];
-  int selectedPageIndex=2;
+
+  int selectedPageIndex = 2;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: mNavs[selectedPageIndex],
+    bool isHomeSelect = selectedPageIndex == 2;
 
+    return Scaffold(
+      backgroundColor: Color(0xFF0F0F0F),
+
+      body: mNavs[selectedPageIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Container(
-        height: 90,
-        width: 90,
+        height: 75,
+        width: 75,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [Colors.deepOrange, Colors.orangeAccent],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          gradient: isHomeSelect
+              ? LinearGradient(
+            colors: [Colors.orange, Colors.deepOrange],
+          )
+              : LinearGradient(
+            colors: [Colors.orange.shade400,Colors.orange.shade900],
           ),
-          boxShadow: [
+          boxShadow: isHomeSelect
+              ? [
             BoxShadow(
-              color: Colors.deepOrangeAccent.withOpacity(0.5),
-              blurRadius: 15,
-              spreadRadius: 4,
-            ),
-          ],
+              color: Colors.orange.withOpacity(0.6),
+              blurRadius: 12,
+              spreadRadius: 3,
+            )
+          ]
+              : [],
         ),
         child: FloatingActionButton(
           onPressed: () {
-            selectedPageIndex=2;
-            setState(() {
-
-            });
+            selectedPageIndex = 2;
+            setState(() {});
           },
-          elevation: 10,
           backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          shape: CircleBorder(),
-          child: Icon(
-            Icons.home_filled,
-            size: 42,
-          ),
+          elevation: 0,
+          child: Icon(Icons.home_filled, size: 34, color: Colors.white),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        notchMargin: 10,
         shape: CircularNotchedRectangle(),
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              onPressed: () {
-                selectedPageIndex=0;
-                setState(() {
+        notchMargin: 8,
+        color: Colors.black12,
+        elevation: 20,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
 
-                });
-              },
-              icon: Icon(Icons.menu, size: 32, color: Colors.black26),
-            ),
-            IconButton(
-              onPressed: () {
-                selectedPageIndex=1;
-                setState(() {
+              /// LEFT
+              _navItem(Icons.menu, 0),
+              _navItem(Icons.favorite_outline, 1),
 
-                });
-              },
-              icon: Icon(Icons.favorite_outline, size: 32, color: Colors.black26),
-            ),
-            SizedBox(width: 50),
-            IconButton(
-              onPressed: () {
-                selectedPageIndex=3;
-                setState(() {
+              /// SPACE FOR FAB
+              SizedBox(width: 30),
 
-                });
-              },
-              icon: Icon(Icons.shopping_cart_outlined, size: 32, color: Colors.black26),
-            ),
-            IconButton(
-              onPressed: () {
-                selectedPageIndex=4;
-                setState(() {
+              /// RIGHT
+              _navItem(Icons.shopping_cart_outlined, 3),
+              _navItem(Icons.person_outline, 4),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _navItem(IconData icon, int index) {
+    bool isSelected = selectedPageIndex == index;
 
-                });
-              },
-              icon: Icon(Icons.person_outline, size: 32, color: Colors.black26),
-            ),
-          ],
+    return GestureDetector(
+      onTap: () {
+        selectedPageIndex = index;
+        setState(() {});
+      },
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: isSelected
+              ? [
+            BoxShadow(
+              color: Colors.orange.withOpacity(0.2),
+              blurRadius: 30,
+              spreadRadius: 2,
+            )
+          ]
+              : [],
+        ),
+        child: Icon(
+          icon,
+          size: 30,
+          color: isSelected ? Colors.orange : Colors.grey,
         ),
       ),
     );

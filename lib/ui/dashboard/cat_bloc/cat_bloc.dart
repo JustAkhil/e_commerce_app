@@ -25,3 +25,4 @@ class CatBloc extends Bloc<CatEvent, CatState> {
     });
   }
 }
+

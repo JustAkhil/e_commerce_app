@@ -4,16 +4,21 @@ import 'package:e_commerce_app/ui/on_boarding/signup/sign_up_page.dart';
 import 'package:e_commerce_app/ui/splash/splash.dart';
 import 'package:flutter/widgets.dart';
 
-class AppRoutes{
-  static final splash="/";
-  static final login="/login";
-  static final signUp="/signUp";
-  static final dashboard="/dashboard";
+import '../../ui/dashboard/product_detail.dart';
 
-  static Map<String,WidgetBuilder>getRoutes()=>{
-    splash :(context)=>SplashPage(),
-    login:(context)=>LoginPage(),
-    signUp:(context)=>SignUpPage(),
-    dashboard:(context)=>DashBoard(),
-  };
+class AppRoutes {
+  static final splash = "/";
+  static final login = "/login";
+  static final signUp = "/signUp";
+  static final dashboard = "/dashboard";
+  static final productDetail = "/productDetail";
+
+  static Map<String, WidgetBuilder> getRoutes() =>
+      {
+        splash: (context) => SplashPage(),
+        login: (context) => LoginPage(),
+        signUp: (context) => SignUpPage(),
+        dashboard: (context) => DashBoard(),
+        productDetail: (context) => Productdetail(),
+      };
 }
