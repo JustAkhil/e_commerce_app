@@ -1,15 +1,20 @@
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:e_commerce_app/data/models/product_model.dart';
+import 'package:e_commerce_app/domain/constants/app_routes.dart';
+import 'package:e_commerce_app/ui/dashboard/cart-bloc/cart_bloc.dart';
+import 'package:e_commerce_app/ui/dashboard/cart-bloc/cart_event.dart';
+import 'package:e_commerce_app/ui/dashboard/cart-bloc/cart_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Productdetail extends StatefulWidget {
-  @override
-  State<Productdetail> createState() => _ProductdetailState();
-}
-
-class _ProductdetailState extends State<Productdetail> {
+class Productdetail extends StatelessWidget {
   ProductModel? productModels;
+
   int dotIndex = 0;
+
+  int quant = 1;
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +37,7 @@ class _ProductdetailState extends State<Productdetail> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(25),
                   child: Image.network(
-                    productModels!.image??"",
+                    productModels!.image ?? "",
                     width: double.infinity,
                     height: double.infinity,
                     fit: BoxFit.contain,
@@ -96,7 +101,7 @@ class _ProductdetailState extends State<Productdetail> {
                     children: [
                       Expanded(
                         child: Text(
-                          productModels!.name??"",
+                          productModels!.name ?? "",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 22,
@@ -105,7 +110,7 @@ class _ProductdetailState extends State<Productdetail> {
                         ),
                       ),
                       Text(
-                        "₹${productModels!.price??""}",
+                        "₹${productModels!.price ?? ""}",
                         style: TextStyle(
                           color: Color(0xFFFF7A00),
                           fontSize: 20,
@@ -142,7 +147,7 @@ class _ProductdetailState extends State<Productdetail> {
                   SizedBox(height: 8),
 
                   Text(
-                        "Premium quality product designed for modern users. Comfortable, stylish, and long-lasting.",
+                    "Premium quality product designed for modern users. Comfortable, stylish, and long-lasting.",
                     style: TextStyle(color: Colors.grey, height: 1.5),
                   ),
 
@@ -173,54 +178,130 @@ class _ProductdetailState extends State<Productdetail> {
             borderRadius: BorderRadius.circular(50),
           ),
           child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: Color(0xFF2A2A2A),
-                borderRadius: BorderRadius.circular(30),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              StatefulBuilder(
+                builder: (context, ss) {
+                  return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF2A2A2A),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if (quant > 1) {
+                              quant--;
+                              ss(() {});
+                            }
+                          },
+                          icon: Icon(Icons.remove, color: Colors.white),
+                        ),
+                        Text(
+                          "$quant",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            quant++;
+                            ss(() {});
+                          },
+                          icon: Icon(Icons.add, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.remove, color: Colors.white),
-                  ),
-                  Text(
-                    "1",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.add, color: Colors.white),
-                  ),
-                ],
+              BlocConsumer<AddToCartBloc, AddToCartState>(
+                listener: (context, state) {
+                  if (state is AddToCartErrorState) {
+                    isLoading = false;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          state.errMsg,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        backgroundColor: Color(0xFFFF7A00),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        margin: EdgeInsets.all(10),
+                        elevation: 8,
+                      ),
+                    );
+                  }
+                  if (state is AddToCartLoadingState) {
+                    isLoading = true;
+                    CircularProgressIndicator(
+                      color: Color(0xFFFF7A00),
+                      trackGap: 2,
+                      strokeWidth: 2,
+                    );
+                  }
+                  if (state is AddToCartSuccessState) {
+                    isLoading = false;
+                    Navigator.pushNamed(context,AppRoutes.cart);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Product Added Successfully",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        backgroundColor: Color(0xFFFF7A00),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        margin: EdgeInsets.all(10),
+                        elevation: 8,
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  return SizedBox(
+                    height: 50,
+                    width: 150,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.read<AddToCartBloc>().add(
+                          AddToCartEvent(
+                            productId: int.parse(productModels!.id!),
+                            quantity: quant,
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFff650e),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: isLoading
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                              trackGap: 2,
+                              strokeWidth: 2,
+                            )
+                          : Text(
+                              "Add To Cart",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                    ),
+                  );
+                },
               ),
-            ),
-            Container(
-              height: 50,
-              width: 150,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFff650e),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Text(
-                  "Add To Cart",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

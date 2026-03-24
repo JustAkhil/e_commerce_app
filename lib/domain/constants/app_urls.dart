@@ -4,4 +4,6 @@ class AppUrls{
   static final signUpUrl="$baseUrl/user/registration";
   static final catUrl="$baseUrl/categories";
   static final productUrl="$baseUrl/products";
+  static final addToCart="$baseUrl/add-to-cart";
+  static final viewCart="$baseUrl/product/view-cart";
 }
