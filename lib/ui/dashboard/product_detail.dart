@@ -197,7 +197,12 @@ class Productdetail extends StatelessWidget {
                               ss(() {});
                             }
                           },
-                          icon: Icon(Icons.remove, color: Colors.white),
+                          icon: IconButton(onPressed:(){
+                            if(quant>1){
+                              quant--;
+                              ss(() {});
+                            }
+                          },icon:Icon(Icons.remove, color: Colors.white)),
                         ),
                         Text(
                           "$quant",
@@ -245,7 +250,10 @@ class Productdetail extends StatelessWidget {
                   }
                   if (state is AddToCartSuccessState) {
                     isLoading = false;
-                    Navigator.pushNamed(context,AppRoutes.cart);
+                    Navigator.pushNamed(context,AppRoutes.cart,arguments: {
+                      "product":productModels,
+                      "quantity":quant
+                    });
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
