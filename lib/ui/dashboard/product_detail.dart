@@ -20,7 +20,7 @@ class _ProductdetailState extends State<Productdetail> {
   int quant = 1;
 
   bool isLoading = false;
-  bool isProductAdded = true;
+  bool isProductAdded = false;
 
 
   @override
@@ -222,7 +222,7 @@ class _ProductdetailState extends State<Productdetail> {
                 },
               ),
               BlocConsumer<AddToCartBloc, AddToCartState>(
-                listenWhen: (ps,cs)=>isProductAdded,
+                listenWhen: (ps,cs)=>!isProductAdded,
                 listener: (context, state) {
                   if (state is AddToCartErrorState) {
                     isLoading = false;
@@ -246,6 +246,7 @@ class _ProductdetailState extends State<Productdetail> {
                     isLoading = true;
                   }
                   if (state is AddToCartSuccessState) {
+                    isProductAdded = true;
                     isLoading = false;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -264,7 +265,6 @@ class _ProductdetailState extends State<Productdetail> {
 
                     );
                     Navigator.pushNamed(context,AppRoutes.cart);
-                    isProductAdded = false;
 
                   }
                 },
