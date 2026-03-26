@@ -3,6 +3,7 @@ import 'package:e_commerce_app/domain/constants/app_routes.dart';
 import 'package:e_commerce_app/ui/dashboard/cart-bloc/cart_bloc.dart';
 import 'package:e_commerce_app/ui/dashboard/cart-fetchbloc/get_cart_bloc.dart';
 import 'package:e_commerce_app/ui/dashboard/cat_bloc/cat_bloc.dart';
+import 'package:e_commerce_app/ui/dashboard/get_order_bloc/get_order_bloc.dart';
 import 'package:e_commerce_app/ui/dashboard/product_bloc/product_bloc.dart';
 import 'package:e_commerce_app/ui/on_boarding/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,8 @@ void main(){
       BlocProvider(create: (context)=>CatBloc(apiHelper: ApiHelper(),)),
       BlocProvider(create: (context)=>ProductBloc(apiHelper: ApiHelper())),
       BlocProvider(create: (context)=>AddToCartBloc(apiHelper: ApiHelper())),
-      BlocProvider(create: (context)=>GetCartBloc(apiHelper: ApiHelper()))
+      BlocProvider(create: (context)=>GetCartBloc(apiHelper: ApiHelper())),
+      BlocProvider(create: (_)=>GetOrderBloc(apiHelper: ApiHelper()))
     ],
     child: MyApp(),));
 }

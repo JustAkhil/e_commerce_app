@@ -38,29 +38,32 @@ class _CartPageState extends State<CartPage> {
           icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
         ),
       ),
-      body: BlocConsumer<GetCartBloc, GetCartState>(
-        listener: (context, state) {
-          if (state is GetCartErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  state.errMsg,
-                  style: TextStyle(color: Colors.white),
-                ),
-                backgroundColor: Color(0xFFFF7A00),
-              ),
-            );
-          }
-        },
+      body: BlocBuilder<GetCartBloc, GetCartState>(
         builder: (context, state) {
           if (state is GetCartLoadingState) {
             return Center(
               child: CircularProgressIndicator(color: Colors.orangeAccent),
             );
           }
+          if (state is GetCartErrorState) {
+            return Center(
+              child: Text(
+                "No Item Added Yet..",
+                style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),
+              ),
+            );
+          }
 
           if (state is GetCartLoadedState) {
             final cartList = state.mCartList;
+            if (cartList!.isEmpty) {
+              return Center(
+                child: Text(
+                  "Cart is empty",
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              );
+            }
             double subTotal = 0;
 
             for (var item in cartList) {
@@ -69,16 +72,6 @@ class _CartPageState extends State<CartPage> {
 
               subTotal += price * quantity;
             }
-
-            if (cartList.isEmpty) {
-              return Center(
-                child: Text(
-                  "Cart is empty",
-                  style: TextStyle(color: Colors.white),
-                ),
-              );
-            }
-
             return Column(
               children: [
                 Expanded(
@@ -293,7 +286,11 @@ class _CartPageState extends State<CartPage> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.shopping_bag, color: Colors.orange, size: 50),
+                                  Icon(
+                                    Icons.shopping_bag,
+                                    color: Colors.orange,
+                                    size: 50,
+                                  ),
 
                                   SizedBox(height: 15),
                                   Text(
@@ -324,8 +321,11 @@ class _CartPageState extends State<CartPage> {
                                             height: 50,
                                             decoration: BoxDecoration(
                                               color: Colors.black,
-                                              borderRadius: BorderRadius.circular(25),
-                                              border: Border.all(color: Colors.orange),
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                              border: Border.all(
+                                                color: Colors.orange,
+                                              ),
                                             ),
                                             child: Center(
                                               child: Text(
@@ -344,30 +344,45 @@ class _CartPageState extends State<CartPage> {
                                       Expanded(
                                         child: InkWell(
                                           onTap: () {
-                                            Navigator.pushReplacementNamed(context,AppRoutes.viewOrder);
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    "Order Place Successfully!!",
-                                                    style: TextStyle(color: Colors.white),
+                                            Navigator.pushReplacementNamed(
+                                              context,
+                                              AppRoutes.viewOrder,
+                                            );
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  "Order Place Successfully!!",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
                                                   ),
-                                                  backgroundColor: Color(0xFFFF7A00),
-                                                  behavior: SnackBarBehavior.floating,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(12),
-                                                  ),
-                                                  margin: EdgeInsets.all(10),
-                                                  elevation: 8,
-                                                )
+                                                ),
+                                                backgroundColor: Color(
+                                                  0xFFFF7A00,
+                                                ),
+                                                behavior:
+                                                    SnackBarBehavior.floating,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                margin: EdgeInsets.all(10),
+                                                elevation: 8,
+                                              ),
                                             );
                                           },
                                           child: Container(
                                             height: 50,
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
-                                                colors: [Colors.orange, Colors.deepOrange],
+                                                colors: [
+                                                  Colors.orange,
+                                                  Colors.deepOrange,
+                                                ],
                                               ),
-                                              borderRadius: BorderRadius.circular(25),
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
                                             ),
                                             child: Center(
                                               child: Text(
@@ -416,8 +431,7 @@ class _CartPageState extends State<CartPage> {
               ],
             );
           }
-
-          return SizedBox();
+          return Container();
         },
       ),
     );

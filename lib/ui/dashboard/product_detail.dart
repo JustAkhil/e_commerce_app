@@ -246,7 +246,6 @@ class _ProductdetailState extends State<Productdetail> {
                     isLoading = true;
                   }
                   if (state is AddToCartSuccessState) {
-                    isProductAdded = true;
                     isLoading = false;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -264,8 +263,7 @@ class _ProductdetailState extends State<Productdetail> {
                       ),
 
                     );
-                    Navigator.pushNamed(context,AppRoutes.cart);
-
+                    isProductAdded = true;
                   }
                 },
                 builder: (context, state) {
@@ -280,6 +278,7 @@ class _ProductdetailState extends State<Productdetail> {
                             quantity: quant,
                           ),
                         );
+                        Navigator.pushNamed(context,AppRoutes.cart);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFff650e),

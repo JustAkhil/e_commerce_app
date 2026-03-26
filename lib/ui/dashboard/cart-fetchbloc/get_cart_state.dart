@@ -5,7 +5,7 @@ class GetCartInitialState extends GetCartState{
 }
 class GetCartLoadingState extends GetCartState{}
 class GetCartLoadedState extends GetCartState{
-  List<CartDataModel>mCartList;
+  List<CartDataModel>?mCartList;
   GetCartLoadedState({required this.mCartList});
 }
 class GetCartErrorState extends GetCartState{
