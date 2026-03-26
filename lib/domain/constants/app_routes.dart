@@ -9,6 +9,7 @@ import '../../ui/dashboard/navs_pages/navs_fav_page.dart';
 import '../../ui/dashboard/navs_pages/navs_menu_page.dart';
 import '../../ui/dashboard/navs_pages/navs_profile_page.dart';
 import '../../ui/dashboard/product_detail.dart';
+import '../../ui/dashboard/view_order_page.dart';
 
 class AppRoutes {
   static final splash = "/";
@@ -20,6 +21,7 @@ class AppRoutes {
   static final fav = "/fav";
   static final profile = "/profile";
   static final menu = "/menu";
+  static final viewOrder="view-order";
 
 
   static Map<String, WidgetBuilder> getRoutes() =>
@@ -33,6 +35,8 @@ class AppRoutes {
         fav: (context) => FavPage(),
         profile: (context) => ProfilePage(),
         menu: (context) => MenuPage(),
+        viewOrder: (context) => ViewOrderPage(),
+
 
       };
 }
