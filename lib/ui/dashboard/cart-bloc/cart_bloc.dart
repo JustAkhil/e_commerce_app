@@ -18,8 +18,10 @@
           });
           if(data!=null && data["status"]==true){
             emit(AddToCartSuccessState());
+            emit(AddToCartInitialState());
           }else{
             emit(AddToCartErrorState(errMsg: data["message"]));
+
           }
         }catch(e){
           emit(AddToCartErrorState(errMsg: e.toString()));

@@ -1,3 +1,4 @@
+import 'package:e_commerce_app/domain/constants/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,7 +13,6 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   var discountCodeController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -23,7 +23,6 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF0F0F0F),
-
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -32,55 +31,59 @@ class _CartPageState extends State<CartPage> {
           "My Cart",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+        leading: IconButton(
+          onPressed: () => Navigator.pushNamed(context,AppRoutes.dashboard),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
+        ),
       ),
+      body: BlocConsumer<GetCartBloc, GetCartState>(
 
-      body: Column(
-        children: [
-          Expanded(
-            child: BlocConsumer<GetCartBloc, GetCartState>(
-              listener: (context, state) {
-                if (state is GetCartErrorState) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        state.errMsg,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      backgroundColor: Color(0xFFFF7A00),
-                    ),
-                  );
-                }
-              },
+        listener: (context, state) {
+          if (state is GetCartErrorState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.errMsg,
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: Color(0xFFFF7A00),
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is GetCartLoadingState) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: Colors.orangeAccent,
+              ),
+            );
+          }
 
-              builder: (context, state) {
-                if (state is GetCartLoadingState) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.orangeAccent,
-                    ),
-                  );
-                }
-                if (state is GetCartErrorState) {
-                  return Center(
-                    child: Text(
-                      state.errMsg,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  );
-                }
-                if (state is GetCartLoadedState) {
-                  final cartList = state.mCartList;
+          if (state is GetCartLoadedState) {
+            final cartList = state.mCartList;
+            double subTotal = 0;
 
-                  if (cartList.isEmpty) {
-                    return Center(
-                      child: Text(
-                        "Cart is empty",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
-                  }
+            for (var item in cartList) {
+              double price = double.tryParse(item.price.toString()) ?? 0;
+              int quantity = int.tryParse(item.quantity.toString()) ?? 1;
 
-                  return ListView.builder(
+              subTotal += price * quantity;
+            }
+
+            if (cartList.isEmpty) {
+              return Center(
+                child: Text(
+                  "Cart is empty",
+                  style: TextStyle(color: Colors.white),
+                ),
+              );
+            }
+
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
                     itemCount: cartList.length,
                     padding: EdgeInsets.all(15),
                     itemBuilder: (context, index) {
@@ -166,14 +169,17 @@ class _CartPageState extends State<CartPage> {
                                       SizedBox(width: 10),
                                       Text(
                                         "${item.quantity}",
-                                        style: TextStyle(color: Colors.white),
+                                        style:
+                                        TextStyle(color: Colors.white),
                                       ),
                                       SizedBox(width: 10),
-                                      IconButton(onPressed: (){},icon:
-                                        Icon(Icons.add,
-                                        size: 16,
-                                        color: Colors.white,
-                                        )
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.add,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -184,112 +190,123 @@ class _CartPageState extends State<CartPage> {
                         ),
                       );
                     },
-                  );
-                }
-
-                return SizedBox();
-              },
-            ),
-          ),
-          TextField(
-            controller: discountCodeController,
-            cursorColor: Colors.orange,
-            style: TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              fillColor: Color(0xFF1F1F1F),
-              filled: true,
-              hintText: "Enter Discount Code",
-              hintStyle: TextStyle(color: Colors.grey),
-              prefixIcon: Icon(Icons.discount, color: Colors.orange),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: EdgeInsets.all(15),
-              suffixIcon: TextButton(
-                onPressed: () {},
-                child: Text(
-                  "Apply",
-                  style: TextStyle(
-                    color: Colors.orange,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
                   ),
                 ),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          Container(
-            padding: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              color: Color(0xFF1F1F1F),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Subtotal", style: TextStyle(color: Colors.grey)),
-                    Text(
-                      "₹245",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: TextField(
+                    controller: discountCodeController,
+                    cursorColor: Colors.orange,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      fillColor: Color(0xFF1F1F1F),
+                      filled: true,
+                      hintText: "Enter Discount Code",
+                      hintStyle: TextStyle(color: Colors.grey),
+                      prefixIcon:
+                      Icon(Icons.discount, color: Colors.orange),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.all(15),
+                      suffixIcon: TextButton(
+                        onPressed: () {},
+                        child: Text(
+                          "Apply",
+                          style: TextStyle(
+                            color: Colors.orange,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-                SizedBox(height: 10),
-                Divider(color: Colors.grey),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Total",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
+
+                SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1F1F1F),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Subtotal",
+                                style: TextStyle(color: Colors.grey)),
+                            Text(
+                              "₹${subTotal.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Divider(color: Colors.grey),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Total",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "₹${subTotal.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Container(
+                    height: 60,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.orange, Colors.deepOrange],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Checkout",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    Text(
-                      "₹245",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(15),
-            child: Container(
-              height: 60,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.orange, Colors.deepOrange],
-                ),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Center(
-                child: Text(
-                  "Checkout",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+            );
+          }
+
+          return SizedBox();
+        },
       ),
     );
   }

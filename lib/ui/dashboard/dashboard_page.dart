@@ -74,15 +74,9 @@ class _DashBoardState extends State<DashBoard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-
-              /// LEFT
               _navItem(Icons.menu, 0),
               _navItem(Icons.favorite_outline, 1),
-
-              /// SPACE FOR FAB
               SizedBox(width: 30),
-
-              /// RIGHT
               _navItem(Icons.shopping_cart_outlined, 3),
               _navItem(Icons.person_outline, 4),
             ],

@@ -7,7 +7,12 @@ import 'package:e_commerce_app/ui/dashboard/cart-bloc/cart_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Productdetail extends StatelessWidget {
+class Productdetail extends StatefulWidget {
+  @override
+  State<Productdetail> createState() => _ProductdetailState();
+}
+
+class _ProductdetailState extends State<Productdetail> {
   ProductModel? productModels;
 
   int dotIndex = 0;
@@ -15,6 +20,8 @@ class Productdetail extends StatelessWidget {
   int quant = 1;
 
   bool isLoading = false;
+  bool isProductAdded = true;
+
 
   @override
   Widget build(BuildContext context) {
@@ -197,13 +204,7 @@ class Productdetail extends StatelessWidget {
                               ss(() {});
                             }
                           },
-                          icon: IconButton(onPressed:(){
-                            if(quant>1){
-                              quant--;
-                              ss(() {});
-                            }
-                          },icon:Icon(Icons.remove, color: Colors.white)),
-                        ),
+                          icon: Icon(Icons.remove, color: Colors.white)),
                         Text(
                           "$quant",
                           style: TextStyle(color: Colors.white, fontSize: 16),
@@ -221,6 +222,7 @@ class Productdetail extends StatelessWidget {
                 },
               ),
               BlocConsumer<AddToCartBloc, AddToCartState>(
+                listenWhen: (ps,cs)=>isProductAdded,
                 listener: (context, state) {
                   if (state is AddToCartErrorState) {
                     isLoading = false;
@@ -242,18 +244,9 @@ class Productdetail extends StatelessWidget {
                   }
                   if (state is AddToCartLoadingState) {
                     isLoading = true;
-                    CircularProgressIndicator(
-                      color: Color(0xFFFF7A00),
-                      trackGap: 2,
-                      strokeWidth: 2,
-                    );
                   }
                   if (state is AddToCartSuccessState) {
                     isLoading = false;
-                    Navigator.pushNamed(context,AppRoutes.cart,arguments: {
-                      "product":productModels,
-                      "quantity":quant
-                    });
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -268,7 +261,11 @@ class Productdetail extends StatelessWidget {
                         margin: EdgeInsets.all(10),
                         elevation: 8,
                       ),
+
                     );
+                    Navigator.pushNamed(context,AppRoutes.cart);
+                    isProductAdded = false;
+
                   }
                 },
                 builder: (context, state) {
@@ -276,7 +273,7 @@ class Productdetail extends StatelessWidget {
                     height: 50,
                     width: 150,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed :() {
                         context.read<AddToCartBloc>().add(
                           AddToCartEvent(
                             productId: int.parse(productModels!.id!),
