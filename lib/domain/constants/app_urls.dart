@@ -8,4 +8,5 @@ class AppUrls{
   static final viewCart="$baseUrl/product/view-cart";
   static final decrementCart="$baseUrl/product/decrement-quantity";
   static final getOrder ="$baseUrl/product/get-order";
+  static final createOrder="$baseUrl/product/create-order";
 }

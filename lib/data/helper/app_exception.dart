@@ -5,7 +5,7 @@ class AppExceptions implements Exception {
   AppExceptions({required this.title, required this.msg});
 
   @override
-  String toString() => '$title: $msg}';
+  String toString() => '$title: $msg';
 }
 
 class NoInternetException extends AppExceptions {
