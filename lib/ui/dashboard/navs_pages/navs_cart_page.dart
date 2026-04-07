@@ -415,10 +415,6 @@ class _CartPageState extends State<CartPage> {
                                                   elevation: 8,
                                                 ),
                                               );
-                                              Navigator.pushReplacementNamed(
-                                                context,
-                                                AppRoutes.dashboard,
-                                              );
                                             }
                                           },
                                           builder: (context, state) {
