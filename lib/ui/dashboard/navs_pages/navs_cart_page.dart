@@ -1,4 +1,5 @@
 import 'package:e_commerce_app/domain/constants/app_routes.dart';
+import 'package:e_commerce_app/ui/dashboard/create_order_bloc/create_order_event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cart-fetchbloc/get_cart_bloc.dart';
 import '../cart-fetchbloc/get_cart_event.dart';
 import '../cart-fetchbloc/get_cart_state.dart';
+import '../create_order_bloc/create_order_bloc.dart';
+import '../create_order_bloc/create_order_state.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -13,6 +16,7 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  bool isLoading=false;
   var discountCodeController = TextEditingController();
 
   @override
@@ -49,7 +53,11 @@ class _CartPageState extends State<CartPage> {
             return Center(
               child: Text(
                 "No Item Added Yet..",
-                style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             );
           }
@@ -342,58 +350,109 @@ class _CartPageState extends State<CartPage> {
 
                                       SizedBox(width: 10),
                                       Expanded(
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.pushReplacementNamed(
-                                              context,
-                                              AppRoutes.viewOrder,
-                                            );
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  "Order Place Successfully!!",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
+                                        child: BlocConsumer<CreateOrderBloc,CreateOrderState>(
+                                          listener: (context, state) {
+                                            if (state is CreateOrderLoadingState) {
+                                              isLoading = true;
+                                              setState(() {});
+                                            }
+                                            if (state is CreateOrderErrorState) {
+                                              isLoading = false;
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    state.errMsg,
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  backgroundColor: Color(
+                                                    0xFF1F1F1F,
+                                                  ),
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                  margin: EdgeInsets.all(10),
+                                                  elevation: 8,
+                                                ),
+                                              );
+                                            }
+                                            if (state is CreateOrderSuccessState) {
+                                              isLoading = false;
+                                              Navigator.pushReplacementNamed(
+                                                context,
+                                                AppRoutes.viewOrder,
+                                              );
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    "Order Place Successfully",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  backgroundColor: Color(
+                                                    0xFFFF7A00,
+                                                  ),
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                  margin: EdgeInsets.all(10),
+                                                  elevation: 8,
+                                                ),
+                                              );
+                                              Navigator.pushReplacementNamed(
+                                                context,
+                                                AppRoutes.dashboard,
+                                              );
+                                            }
+                                          },
+                                          builder: (context, state) {
+                                            return InkWell(
+                                              onTap: () {
+                                                context
+                                                    .read<CreateOrderBloc>()
+                                                    .add(PlaceOrderEvent());
+                                              },
+                                              child: Container(
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      Colors.orange,
+                                                      Colors.deepOrange,
+                                                    ],
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(25),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    "Confirm",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
                                                 ),
-                                                backgroundColor: Color(
-                                                  0xFFFF7A00,
-                                                ),
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                margin: EdgeInsets.all(10),
-                                                elevation: 8,
                                               ),
                                             );
                                           },
-                                          child: Container(
-                                            height: 50,
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.orange,
-                                                  Colors.deepOrange,
-                                                ],
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(25),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                "Confirm",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
                                         ),
                                       ),
                                     ],
