@@ -47,6 +47,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
         ),
       ),
       body: SmartRefresher(
+        primary: false,
 
         //enablePullUp: true,
         enablePullDown: true,
@@ -54,29 +55,27 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
           context.read<GetOrderBloc>().add(GetAllOrderEvent());
           _refreshController.refreshCompleted();
         },
-        header: WaterDropHeader(),
+        header: MaterialClassicHeader(
+          backgroundColor: Colors.transparent,
+          color: Colors.orange,
+          distance: 40,
+          offset: 0,
+        ),
         footer: CustomFooter(
-          builder: (_,mode){
-            Widget body ;
-            if(mode==LoadStatus.idle){
-              body =  Text("pull up load");
-            }
-            else if(mode==LoadStatus.loading){
-              body =  CupertinoActivityIndicator();
-            }
-            else if(mode == LoadStatus.failed){
+          builder: (_, mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("pull up load");
+            } else if (mode == LoadStatus.loading) {
+              body = CupertinoActivityIndicator();
+            } else if (mode == LoadStatus.failed) {
               body = Text("Load Failed!Click retry!");
-            }
-            else if(mode == LoadStatus.canLoading){
+            } else if (mode == LoadStatus.canLoading) {
               body = Text("release to load more");
-            }
-            else{
+            } else {
               body = Text("No more Data");
             }
-            return Container(
-              height: 55.0,
-              child: Center(child:body),
-            );
+            return Container(height: 55.0, child: Center(child: body));
           },
         ),
 
@@ -106,10 +105,11 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                 grandTotal += double.tryParse(order.totalAmount ?? '0')!;
               }
 
-              return Column(
-                children: [
-                  Expanded(
-                    child: orders.isEmpty
+              return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    orders.isEmpty
                         ? Center(
                             child: Text(
                               "No orders found",
@@ -120,9 +120,10 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                             ),
                           )
                         : ListView.builder(
+                            shrinkWrap: true,
                             padding: EdgeInsets.all(15),
                             itemCount: orders.length,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: BouncingScrollPhysics(),
                             itemBuilder: (context, orderIndex) {
                               final order = orders[orderIndex];
                               final products = order.product ?? [];
@@ -135,7 +136,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                   children: [
                                     Row(
                                       mainAxisAlignment:
@@ -156,9 +158,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: Colors.orange,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                           ),
                                           child: Text(
                                             order.status ?? '',
@@ -179,7 +180,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                       shrinkWrap: true,
                                       physics: NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, productIndex) {
-                                        final product = products[productIndex];
+                                        final product =
+                                            products[productIndex];
                                         return Padding(
                                           padding: const EdgeInsets.symmetric(
                                             vertical: 6,
@@ -191,7 +193,9 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                                 height: 60,
                                                 decoration: BoxDecoration(
                                                   borderRadius:
-                                                      BorderRadius.circular(12),
+                                                      BorderRadius.circular(
+                                                        12,
+                                                      ),
                                                   image: DecorationImage(
                                                     image: NetworkImage(
                                                       product.image ?? "",
@@ -204,7 +208,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                      CrossAxisAlignment
+                                                          .start,
                                                   children: [
                                                     Text(
                                                       product.name ?? '',
@@ -240,7 +245,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
 
                                     Divider(color: Colors.grey.shade700),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.end,
                                       children: [
                                         Text(
                                           "Order Total: ",
@@ -264,96 +270,96 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                               );
                             },
                           ),
-                  ),
 
-                  // Grand Total
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 10,
-                    ),
-                    child: Container(
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.orange, Colors.deepOrange],
+                    // Grand Total
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 10,
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.orange, Colors.deepOrange],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        borderRadius: BorderRadius.circular(20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Grand Total",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              "₹${grandTotal.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 10,
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Grand Total",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                          Expanded(
+                            child: Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(color: Colors.orange),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Track Order",
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          Text(
-                            "₹${grandTotal.toStringAsFixed(2)}",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [Colors.orange, Colors.deepOrange],
+                                ),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Reorder",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 10,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: Colors.orange),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "Track Order",
-                                style: TextStyle(
-                                  color: Colors.orange,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Colors.orange, Colors.deepOrange],
-                              ),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "Reorder",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }
 
