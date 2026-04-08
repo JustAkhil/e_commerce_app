@@ -339,7 +339,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         "₹${grandTotal.toStringAsFixed(2)}",
                         style: TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
                       ),
