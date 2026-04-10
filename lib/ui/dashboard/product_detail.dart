@@ -1,3 +1,4 @@
+// product_detail.dart
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:e_commerce_app/data/models/product_model.dart';
 import 'package:e_commerce_app/domain/constants/app_routes.dart';
@@ -14,22 +15,20 @@ class Productdetail extends StatefulWidget {
 
 class _ProductdetailState extends State<Productdetail> {
   ProductModel? productModels;
-
   int dotIndex = 0;
-
   int quant = 1;
-
   bool isLoading = false;
-  bool isProductAdded = false;
-
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    productModels ??=
+    ModalRoute.of(context)!.settings.arguments as ProductModel;
+  }
 
   @override
   Widget build(BuildContext context) {
-    productModels = ModalRoute.of(context)!.settings.arguments as ProductModel;
-
     return Scaffold(
       backgroundColor: Colors.black,
-
       body: Column(
         children: [
           Container(
@@ -59,13 +58,9 @@ class _ProductdetailState extends State<Productdetail> {
                       _iconBtn(Icons.arrow_back_ios_new, () {
                         Navigator.pop(context);
                       }),
-
                       Spacer(),
-
                       _iconBtn(Icons.share, () {}),
-
                       SizedBox(width: 10),
-
                       _iconBtn(Icons.favorite_border, () {}),
                     ],
                   ),
@@ -86,7 +81,6 @@ class _ProductdetailState extends State<Productdetail> {
               ],
             ),
           ),
-
           SizedBox(height: 15),
           Expanded(
             child: Container(
@@ -99,7 +93,6 @@ class _ProductdetailState extends State<Productdetail> {
                   topRight: Radius.circular(35),
                 ),
               ),
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -126,7 +119,6 @@ class _ProductdetailState extends State<Productdetail> {
                       ),
                     ],
                   ),
-
                   SizedBox(height: 10),
                   Row(
                     children: [
@@ -134,13 +126,9 @@ class _ProductdetailState extends State<Productdetail> {
                       SizedBox(width: 5),
                       Text("4.2", style: TextStyle(color: Colors.white)),
                       SizedBox(width: 10),
-                      Text(
-                        "(320 Reviews)",
-                        style: TextStyle(color: Colors.grey),
-                      ),
+                      Text("(320 Reviews)", style: TextStyle(color: Colors.grey)),
                     ],
                   ),
-
                   SizedBox(height: 20),
                   Text(
                     "Description",
@@ -150,14 +138,11 @@ class _ProductdetailState extends State<Productdetail> {
                       fontSize: 16,
                     ),
                   ),
-
                   SizedBox(height: 8),
-
                   Text(
                     "Premium quality product designed for modern users. Comfortable, stylish, and long-lasting.",
                     style: TextStyle(color: Colors.grey, height: 1.5),
                   ),
-
                   SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,7 +152,6 @@ class _ProductdetailState extends State<Productdetail> {
                       _feature(Icons.refresh, "Return"),
                     ],
                   ),
-
                   Spacer(),
                 ],
               ),
@@ -204,7 +188,8 @@ class _ProductdetailState extends State<Productdetail> {
                               ss(() {});
                             }
                           },
-                          icon: Icon(Icons.remove, color: Colors.white)),
+                          icon: Icon(Icons.remove, color: Colors.white),
+                        ),
                         Text(
                           "$quant",
                           style: TextStyle(color: Colors.white, fontSize: 16),
@@ -222,48 +207,41 @@ class _ProductdetailState extends State<Productdetail> {
                 },
               ),
               BlocConsumer<AddToCartBloc, AddToCartState>(
-                listenWhen: (ps,cs)=>!isProductAdded,
+                listenWhen: (ps, cs) => true,
                 listener: (context, state) {
+                  print("🟡 LISTENER CALLED: $state");
+                  if (state is AddToCartLoadingState) {
+                    setState(() => isLoading = true);
+                  }
                   if (state is AddToCartErrorState) {
-                    isLoading = false;
+                    setState(() => isLoading = false);
+                    ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          state.errMsg,
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        content: Text(state.errMsg, style: TextStyle(color: Colors.white)),
                         backgroundColor: Color(0xFFFF7A00),
                         behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         margin: EdgeInsets.all(10),
                         elevation: 8,
                       ),
                     );
-                  }
-                  if (state is AddToCartLoadingState) {
-                    isLoading = true;
                   }
                   if (state is AddToCartSuccessState) {
-                    isLoading = false;
+                    print("🟢 SUCCESS - navigating");
+                    setState(() => isLoading = false);
+                    ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          "Product Added Successfully",
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        content: Text("Product Added Successfully", style: TextStyle(color: Colors.white)),
                         backgroundColor: Color(0xFFFF7A00),
                         behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         margin: EdgeInsets.all(10),
                         elevation: 8,
                       ),
-
                     );
-                    isProductAdded = true;
+                    Navigator.pushNamed(context, AppRoutes.cart);
                   }
                 },
                 builder: (context, state) {
@@ -271,14 +249,17 @@ class _ProductdetailState extends State<Productdetail> {
                     height: 50,
                     width: 150,
                     child: ElevatedButton(
-                      onPressed :() {
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                        print("🔴 BUTTON TAPPED");
+                        setState(() => isLoading = true);
                         context.read<AddToCartBloc>().add(
                           AddToCartEvent(
                             productId: int.parse(productModels!.id!),
                             quantity: quant,
                           ),
                         );
-                        Navigator.pushNamed(context,AppRoutes.cart);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFff650e),
@@ -288,18 +269,18 @@ class _ProductdetailState extends State<Productdetail> {
                       ),
                       child: isLoading
                           ? CircularProgressIndicator(
-                              color: Colors.white,
-                              trackGap: 2,
-                              strokeWidth: 2,
-                            )
+                        color: Colors.white,
+                        trackGap: 2,
+                        strokeWidth: 2,
+                      )
                           : Text(
-                              "Add To Cart",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Colors.white,
-                              ),
-                            ),
+                        "Add To Cart",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   );
                 },

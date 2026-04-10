@@ -21,7 +21,7 @@ class AppRoutes {
   static final fav = "/fav";
   static final profile = "/profile";
   static final menu = "/menu";
-  static final viewOrder="view-order";
+  static final viewOrder="/view-order";
 
 
   static Map<String, WidgetBuilder> getRoutes() =>
